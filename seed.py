@@ -1,5 +1,3 @@
-"""Seed the database with sample data."""
-
 from datetime import datetime, timedelta
 
 from app import create_app, db
