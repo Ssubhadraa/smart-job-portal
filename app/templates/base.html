@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Job Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="{{ url_for('index') }}" class="logo">SmartJob</a>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('jobs.list_jobs') }}">Browse Jobs</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_student %}
+                        <li><a href="{{ url_for('students.dashboard') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('students.applications') }}">My Applications</a></li>
+                        <li><a href="{{ url_for('students.profile') }}">Profile</a></li>
+                    {% elif current_user.is_company %}
+                        <li><a href="{{ url_for('jobs.company_dashboard') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('jobs.manage_job') }}">Post Job</a></li>
+                        <li><a href="{{ url_for('jobs.company_profile') }}">Company</a></li>
+                    {% elif current_user.is_admin %}
+                        <li><a href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+                        <li><a href="{{ url_for('admin.users') }}">Users</a></li>
+                        <li><a href="{{ url_for('admin.jobs') }}">Jobs</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-sm">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div id="toast-container"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                window.flashMessages = {{ messages | tojson }};
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <main class="container main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; {{ now.year }} Smart Job Portal. Find your next opportunity.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ job.title }} — Smart Job Portal{% endblock %}
+
+{% block content %}
+<article class="job-detail card">
+    <div class="job-detail-header">
+        <div>
+            <h1>{{ job.title }}</h1>
+            <p class="company">{{ job.company.company_name }}</p>
+            <p class="meta">
+                {{ job.location or 'Remote' }} ·
+                {{ job.job_type | replace('_', ' ') | title }} ·
+                Posted {{ job.posted_at.strftime('%b %d, %Y') }}
+            </p>
+        </div>
+        {% if match_score %}
+        <span class="badge badge-match badge-lg">{{ match_score | int }}% Match</span>
+        {% endif %}
+    </div>
+
+    <div class="job-meta-grid">
+        <div><strong>Experience:</strong> {{ job.experience_min }}+ years</div>
+        {% if job.salary_min %}
+        <div><strong>Salary:</strong> ${{ "{:,.0f}".format(job.salary_min) }}{% if job.salary_max %} – ${{ "{:,.0f}".format(job.salary_max) }}{% endif %}</div>
+        {% endif %}
+        <div><strong>Status:</strong> {{ job.status | title }}</div>
+    </div>
+
+    {% if job.skills %}
+    <div class="skills-section">
+        <strong>Required Skills:</strong>
+        {% for js in job.skills if js.is_required %}
+        <span class="skill-badge">{{ js.skill.name }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="job-description">
+        <h2>Description</h2>
+        <p>{{ job.description }}</p>
+    </div>
+
+    <div class="apply-section">
+        {% if job.status != 'active' %}
+        <p class="alert alert-warning">This job is no longer accepting applications.</p>
+        {% elif existing_application %}
+        <p class="alert alert-info">You applied on {{ existing_application.applied_at.strftime('%b %d, %Y') }} — Status: <strong>{{ existing_application.status | title }}</strong></p>
+        {% elif current_user.is_authenticated and current_user.is_student %}
+        <form method="post" action="{{ url_for('jobs.apply', job_id=job.id) }}" class="form">
+            <div class="form-group">
+                <label for="cover_note">Cover Note (optional)</label>
+                <textarea id="cover_note" name="cover_note" rows="4" placeholder="Tell the employer why you're a great fit..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply Now</button>
+        </form>
+        {% elif not current_user.is_authenticated %}
+        <p><a href="{{ url_for('auth.login', next=request.url) }}" class="btn btn-primary">Login to Apply</a></p>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}

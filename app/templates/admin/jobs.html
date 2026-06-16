@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Moderate Jobs — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Job Moderation</h1>
+</div>
+
+<form method="get" class="filters card">
+    <select name="status">
+        <option value="">All Statuses</option>
+        <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+        <option value="draft" {% if status == 'draft' %}selected{% endif %}>Draft</option>
+        <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Status</th>
+                <th>Posted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.title }}</td>
+                <td>{{ job.company.company_name }}</td>
+                <td><span class="badge badge-{{ job.status }}">{{ job.status | title }}</span></td>
+                <td>{{ job.posted_at.strftime('%b %d, %Y') if job.posted_at else '—' }}</td>
+                <td class="actions">
+                    <form method="post" action="{{ url_for('admin.moderate_job', job_id=job.id) }}" class="inline-form">
+                        <button type="submit" name="action" value="approve" class="btn btn-sm btn-primary">Approve</button>
+                        <button type="submit" name="action" value="remove" class="btn btn-sm btn-outline">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

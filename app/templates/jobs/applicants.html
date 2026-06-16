@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Applicants — {{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Applicants for {{ job.title }}</h1>
+    <a href="{{ url_for('jobs.company_dashboard') }}">← Back to Dashboard</a>
+</div>
+
+{% if applications %}
+<div class="applicant-list">
+    {% for app in applications %}
+    <div class="card applicant-card">
+        <div class="applicant-header">
+            <h3>{{ app.student.full_name }}</h3>
+            <span class="badge badge-{{ app.status }}">{{ app.status | title }}</span>
+        </div>
+        <p>{{ app.student.education or 'No education listed' }}</p>
+        <p>{{ app.student.experience_years or 0 }} years experience</p>
+        {% if app.cover_note %}
+        <blockquote>{{ app.cover_note }}</blockquote>
+        {% endif %}
+        <div class="skills-section">
+            {% for ss in app.student.skills %}
+            <span class="skill-badge">{{ ss.skill.name }}</span>
+            {% endfor %}
+        </div>
+        <form method="post" action="{{ url_for('jobs.update_application_status', app_id=app.id) }}" class="status-form">
+            <select name="status">
+                <option value="applied" {% if app.status == 'applied' %}selected{% endif %}>Applied</option>
+                <option value="shortlisted" {% if app.status == 'shortlisted' %}selected{% endif %}>Shortlisted</option>
+                <option value="rejected" {% if app.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                <option value="hired" {% if app.status == 'hired' %}selected{% endif %}>Hired</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-primary">Update Status</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No applications yet for this job.</p>
+</div>
+{% endif %}
+{% endblock %}

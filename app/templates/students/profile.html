@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Profile — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Profile</h1>
+    <p>Completeness: {{ profile.profile_complete_pct }}%</p>
+</div>
+
+<div class="two-col">
+    <section class="card">
+        <h2>Personal Info</h2>
+        <form method="post" class="form">
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" value="{{ profile.full_name }}" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" value="{{ profile.phone or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="education">Education</label>
+                <textarea id="education" name="education" rows="3">{{ profile.education or '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="experience_years">Experience (years)</label>
+                <input type="number" id="experience_years" name="experience_years" step="0.5" min="0" value="{{ profile.experience_years or 0 }}">
+            </div>
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" rows="4">{{ profile.bio or '' }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Resume</h2>
+        {% if profile.resume_path %}
+        <p>Current resume: <strong>{{ profile.resume_path }}</strong></p>
+        {% else %}
+        <p class="text-muted">No resume uploaded yet.</p>
+        {% endif %}
+        <form method="post" action="{{ url_for('students.upload_resume') }}" enctype="multipart/form-data" class="form">
+            <div class="form-group">
+                <label for="resume">Upload PDF Resume</label>
+                <input type="file" id="resume" name="resume" accept=".pdf" required>
+            </div>
+            <button type="submit" class="btn btn-outline">Upload Resume</button>
+        </form>
+
+        <h2 class="mt-lg">Skills</h2>
+        <form method="post" action="{{ url_for('students.manage_skills') }}" class="form">
+            <div class="form-group">
+                <label for="proficiency">Proficiency Level</label>
+                <select id="proficiency" name="proficiency">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate" selected>Intermediate</option>
+                    <option value="expert">Expert</option>
+                </select>
+            </div>
+            <div class="skill-picker">
+                {% set selected = profile.skills | map(attribute='skill_id') | list %}
+                {% for skill in all_skills %}
+                <label class="skill-tag">
+                    <input type="checkbox" name="skill_ids" value="{{ skill.id }}" {% if skill.id in selected %}checked{% endif %}>
+                    {{ skill.name }}
+                </label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary mt-md">Save Skills</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

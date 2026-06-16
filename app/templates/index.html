@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Home — Smart Job Portal{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Find Your Dream Job</h1>
+        <p>Skill-based matching connects talented students with top companies.</p>
+        <form action="{{ url_for('jobs.list_jobs') }}" method="get" class="hero-search">
+            <input type="text" name="q" placeholder="Search jobs, companies, keywords..." aria-label="Search jobs">
+            <button type="submit" class="btn btn-primary">Search Jobs</button>
+        </form>
+        <div class="hero-actions">
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline">Get Started</a>
+            {% elif current_user.is_student %}
+                <a href="{{ url_for('students.dashboard') }}" class="btn btn-outline">View Recommendations</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-grid">
+        <div class="feature-card">
+            <h3>Smart Matching</h3>
+            <p>Get personalized job recommendations based on your skills.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Easy Apply</h3>
+            <p>Apply with one click and track your application status.</p>
+        </div>
+        <div class="feature-card">
+            <h3>For Companies</h3>
+            <p>Post jobs, tag required skills, and manage applicants.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Admin Dashboard</h1>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>{{ user_count }}</h3>
+        <p>Total Users</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ job_count }}</h3>
+        <p>Active Jobs</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ app_count }}</h3>
+        <p>Applications</p>
+    </div>
+</div>
+
+<section class="section">
+    <h2>Recent Audit Logs</h2>
+    {% if recent_logs %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Target</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_logs %}
+                <tr>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.target_type }} #{{ log.target_id }}</td>
+                    <td>{{ log.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted">No audit logs yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

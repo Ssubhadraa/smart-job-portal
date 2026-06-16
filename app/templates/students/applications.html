@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}My Applications — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>My Applications</h1>
+</div>
+
+{% if applications %}
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Job</th>
+                <th>Company</th>
+                <th>Applied</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.job.title }}</td>
+                <td>{{ app.job.company.company_name }}</td>
+                <td>{{ app.applied_at.strftime('%b %d, %Y') }}</td>
+                <td><span class="badge badge-{{ app.status }}">{{ app.status | title }}</span></td>
+                <td><a href="{{ url_for('jobs.detail', job_id=app.job_id) }}">View Job</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>You haven't applied to any jobs yet.</p>
+    <a href="{{ url_for('jobs.list_jobs') }}" class="btn btn-primary">Browse Jobs</a>
+</div>
+{% endif %}
+{% endblock %}

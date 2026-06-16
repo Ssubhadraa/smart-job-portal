@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Browse Jobs — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Browse Jobs</h1>
+</div>
+
+<form method="get" class="filters card">
+    <div class="filter-row">
+        <input type="text" name="q" value="{{ q }}" placeholder="Search keyword...">
+        <input type="text" name="location" value="{{ location }}" placeholder="Location">
+        <select name="job_type">
+            <option value="">All Types</option>
+            {% for jt in job_types %}
+            <option value="{{ jt }}" {% if job_type == jt %}selected{% endif %}>{{ jt | replace('_', ' ') | title }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="experience" value="{{ experience or '' }}" placeholder="Your exp (yrs)" min="0">
+        <input type="number" name="salary_min" value="{{ salary_min or '' }}" placeholder="Min salary">
+        <select name="sort">
+            <option value="date" {% if sort == 'date' %}selected{% endif %}>Sort by Date</option>
+            <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Sort by Relevance</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+{% if jobs %}
+<div class="job-list">
+    {% for item in jobs %}
+    {% set job = item.job %}
+    <article class="job-card job-card-list">
+        {% if item.match_score %}
+        <span class="badge badge-match">{{ item.match_score | int }}% Match</span>
+        {% endif %}
+        <h3><a href="{{ url_for('jobs.detail', job_id=job.id) }}">{{ job.title }}</a></h3>
+        <p class="company">{{ job.company.company_name }}</p>
+        <p class="meta">
+            {{ job.location or 'Remote' }} ·
+            {{ job.job_type | replace('_', ' ') | title }} ·
+            {{ job.experience_min }}+ yrs
+            {% if job.salary_min %} · ${{ "{:,.0f}".format(job.salary_min) }}{% if job.salary_max %}–${{ "{:,.0f}".format(job.salary_max) }}{% endif %}{% endif %}
+        </p>
+        <p class="excerpt">{{ job.description[:150] }}...</p>
+    </article>
+    {% endfor %}
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="pagination">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('jobs.list_jobs', page=pagination.prev_num, q=q, location=location, job_type=job_type, experience=experience, salary_min=salary_min, sort=sort) }}">← Prev</a>
+    {% endif %}
+    <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+    {% if pagination.has_next %}
+    <a href="{{ url_for('jobs.list_jobs', page=pagination.next_num, q=q, location=location, job_type=job_type, experience=experience, salary_min=salary_min, sort=sort) }}">Next →</a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <p>No jobs match your search criteria.</p>
+    <a href="{{ url_for('jobs.list_jobs') }}" class="btn btn-outline">Clear Filters</a>
+</div>
+{% endif %}
+{% endblock %}

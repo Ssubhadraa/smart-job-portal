@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{% if job %}Edit Job{% else %}Post Job{% endif %} — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if job %}Edit Job{% else %}Post a New Job{% endif %}</h1>
+</div>
+
+<form method="post" class="form card">
+    <div class="form-group">
+        <label for="title">Job Title</label>
+        <input type="text" id="title" name="title" value="{{ job.title if job else '' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="8" required>{{ job.description if job else '' }}</textarea>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" value="{{ job.location if job else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="job_type">Job Type</label>
+            <select id="job_type" name="job_type">
+                {% for jt in job_types %}
+                <option value="{{ jt }}" {% if job and job.job_type == jt %}selected{% endif %}>{{ jt | replace('_', ' ') | title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="experience_min">Min Experience (years)</label>
+            <input type="number" id="experience_min" name="experience_min" min="0" value="{{ job.experience_min if job else 0 }}">
+        </div>
+        <div class="form-group">
+            <label for="salary_min">Min Salary</label>
+            <input type="number" id="salary_min" name="salary_min" value="{{ job.salary_min if job and job.salary_min else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="salary_max">Max Salary</label>
+            <input type="number" id="salary_max" name="salary_max" value="{{ job.salary_max if job and job.salary_max else '' }}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Required Skills</label>
+        <div class="skill-picker">
+            {% for skill in all_skills %}
+            <label class="skill-tag">
+                <input type="checkbox" name="skill_ids" value="{{ skill.id }}" {% if skill.id in selected_skill_ids %}checked{% endif %}>
+                {{ skill.name }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" name="action" value="draft" class="btn btn-outline">Save Draft</button>
+        <button type="submit" name="action" value="publish" class="btn btn-primary">Publish</button>
+    </div>
+</form>
+{% endblock %}

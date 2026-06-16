@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Welcome, {{ profile.full_name }}</h1>
+    <p>Profile completeness: <strong>{{ profile.profile_complete_pct }}%</strong></p>
+    <div class="progress-bar"><div class="progress-fill" style="width: {{ profile.profile_complete_pct }}%"></div></div>
+</div>
+
+{% if profile.profile_complete_pct < 100 %}
+<div class="alert alert-info">
+    Complete your profile to get better job recommendations.
+    <a href="{{ url_for('students.profile') }}">Edit Profile</a>
+</div>
+{% endif %}
+
+<section class="section">
+    <h2>Recommended for You</h2>
+    {% if recommendations %}
+    <div class="job-grid">
+        {% for rec in recommendations %}
+        <div class="job-card">
+            <span class="badge badge-match">{{ rec.match_score | int }}% Match</span>
+            <h3><a href="{{ url_for('jobs.detail', job_id=rec.id) }}">{{ rec.title }}</a></h3>
+            <p class="company">{{ rec.company_name }}</p>
+            <p class="meta">{{ rec.location or 'Remote' }} · {{ rec.job_type | replace('_', ' ') | title }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% elif not profile.skills %}
+    <div class="empty-state">
+        <p>Add skills to your profile to see personalized recommendations.</p>
+        <a href="{{ url_for('students.profile') }}" class="btn btn-primary">Complete Your Profile</a>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No matching jobs found yet. Check back soon or browse all jobs.</p>
+        <a href="{{ url_for('jobs.list_jobs') }}" class="btn btn-outline">Browse Jobs</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

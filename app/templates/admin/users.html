@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Manage Users — Smart Job Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>User Management</h1>
+</div>
+
+<form method="get" class="filters card">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search email...">
+    <select name="role">
+        <option value="">All Roles</option>
+        <option value="student" {% if role == 'student' %}selected{% endif %}>Student</option>
+        <option value="company" {% if role == 'company' %}selected{% endif %}>Company</option>
+        <option value="admin" {% if role == 'admin' %}selected{% endif %}>Admin</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role | title }}</td>
+                <td>
+                    {% if user.is_active %}
+                    <span class="badge badge-active">Active</span>
+                    {% else %}
+                    <span class="badge badge-closed">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                <td>
+                    {% if user.id != current_user.id %}
+                    <form method="post" action="{{ url_for('admin.toggle_user', user_id=user.id) }}" class="inline-form">
+                        <button type="submit" class="btn btn-sm {% if user.is_active %}btn-outline{% else %}btn-primary{% endif %}">
+                            {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
