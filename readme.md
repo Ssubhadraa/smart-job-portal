@@ -16,7 +16,7 @@ A Flask-based job portal with skill-based job recommendations, role-based dashbo
 ```bash
 cd smart-job-portal
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 python seed.py
@@ -54,16 +54,16 @@ Open http://127.0.0.1:5000
 ```
 smart-job-portal/
 ├── app/
-│   ├── __init__.py          # App factory
-│   ├── models/              # SQLAlchemy models
-│   ├── routes/              # auth, students, jobs, admin blueprints
-│   ├── services/            # Recommendation engine
-│   ├── templates/           # Jinja2 templates
-│   └── static/              # CSS and JS
-├── migrations/              # Flask-Migrate
-├── uploads/                 # Resume uploads
-├── seed.py                  # Database seeder
-├── app.py                   # Entry point
+│   ├── __init__.py
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── templates/
+│   └── static/
+├── migrations/
+├── uploads/
+├── seed.py
+├── app.py
 ├── requirements.txt
 ├── .env.example
 └── readme.md
